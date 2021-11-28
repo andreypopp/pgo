@@ -1,0 +1,31 @@
+(library
+ (name pgo_api)
+ (modules pgo_api internal)
+ (synopsis "Bindings to PostgreSQL APIs")
+ (libraries ctypes.stubs pgo_def pgo_typ pgo_api_desc)
+ (foreign_stubs
+   (language c)
+   (names pgo_api internal)
+   (flags :standard
+          (:include ../config/cflags.sexp)
+          "-I."
+          ))
+ )
+
+(library
+ (name pgo_api_desc)
+ (modules pgo_api_desc)
+ (libraries ctypes.stubs pgo_def pgo_typ))
+
+(executable
+ (name pgo_api_gen)
+ (modules pgo_api_gen)
+ (libraries pgo_api_desc ctypes.stubs))
+
+(rule
+ (targets internal.ml)
+ (action  (run ./pgo_api_gen.exe ml %{targets})))
+
+(rule
+ (targets internal.c)
+ (action  (run ./pgo_api_gen.exe c %{targets})))

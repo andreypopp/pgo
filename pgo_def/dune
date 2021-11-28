@@ -1,0 +1,47 @@
+(env
+  (dev
+    (flags (:standard -w -9))))
+
+(library
+ (name pgo_def)
+ (synopsis "pgo_api constant definitions")
+ (modules pgo_def internal)
+ (libraries pgo_def_desc ctypes.stubs))
+
+(library
+ (name pgo_def_desc)
+ (modules pgo_def_desc)
+ (libraries ctypes.stubs))
+
+(executable
+ (name pgo_def_gen)
+ (modules pgo_def_gen)
+ (libraries pgo_def_desc ctypes.stubs))
+
+(rule
+ (targets pgo_def.c)
+ (action (run ./pgo_def_gen.exe %{targets})))
+
+(rule
+ (targets pgo_def_gen2.exe)
+ (deps    (:c_code ./pgo_def.c))
+ (action  (progn
+           (run
+            %{ocaml-config:c_compiler}
+            -I %{lib:ctypes:}
+            -I %{ocaml-config:standard_library}
+            %{read-lines:../config/include-flags.lines}
+            -c %{c_code})
+           (run
+            %{ocaml-config:c_compiler}
+            -I %{lib:ctypes:}
+            -I %{ocaml-config:standard_library}
+            %{read-lines:../config/include-flags.lines}
+            -o %{targets} pgo_def.o %{read-lines:../config/archives.lines})
+            ))
+ )
+
+(rule
+ (target internal.ml)
+ (action 
+  (with-stdout-to %{target} (run ./pgo_def_gen2.exe))))
