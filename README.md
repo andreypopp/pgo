@@ -10,11 +10,13 @@ Build [PostgreSQL][] extensions in [OCaml][].
   PostgreSQL/C API (both to use PostgreSQL/C API and to expose OCaml functions
   to PostgreSQL).
 
-- Libraries `pgo_def`, `pgo_typ`, `pgo_api` provide bindings (constant
-  definitions, type definitions and functions bindings) to PostgreSQL/C API.
+- Library `pgo.api` provide bindings (type definitions and functions bindings)
+  to PostgreSQL/C API.
 
-- Library `pgo_fdw` contains harness code and an example of a simple [FDW][]
-  implemented in OCaml.
+- Library `pgo.fdw` sketches a harness for implementing [FDW][] with OCaml.
+
+- Library `example/fdw` implements an example [FDW][] which exposes a single
+  table.
 
 ## Development
 
@@ -23,25 +25,25 @@ Build [PostgreSQL][] extensions in [OCaml][].
 2. Initialize opam switch:
 
    ```
-   $ make init
+   make init
    ```
 
 3. Build the project:
 
    ```
-   $ make build
+   make build
    ```
 
 4. Initialize the test database:
 
    ```
-   $ make test-db
+   make test-db
    ```
 
 5. Run `psql` shell within the test database with the example extension loaded:
 
    ```
-   $ make psql
+   make psql
    ```
 
 [FDW]: https://wiki.postgresql.org/wiki/Foreign_data_wrappers
