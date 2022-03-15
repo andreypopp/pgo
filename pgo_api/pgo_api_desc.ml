@@ -1,7 +1,6 @@
 module Def (F : Cstubs.FOREIGN) = struct
   open! Ctypes
   open! F
-  include Pgo_def
   include Pgo_typ
 
   let elog = foreign "elog" (Elog_level.t @-> string @-> returning void)

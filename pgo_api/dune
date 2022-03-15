@@ -2,7 +2,7 @@
  (name pgo_api)
  (modules pgo_api internal)
  (synopsis "Bindings to PostgreSQL APIs")
- (libraries ctypes.stubs pgo_def pgo_typ pgo_api_desc)
+ (libraries ctypes.stubs pgo_typ pgo_api_desc)
  (foreign_stubs
    (language c)
    (names pgo_api internal)
@@ -15,7 +15,7 @@
 (library
  (name pgo_api_desc)
  (modules pgo_api_desc)
- (libraries ctypes.stubs pgo_def pgo_typ))
+ (libraries ctypes.stubs pgo_typ))
 
 (executable
  (name pgo_api_gen)
