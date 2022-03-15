@@ -28,7 +28,7 @@ test-db:
 	@dropdb --if-exists $(PGDATABASE)
 	@createdb $(PGDATABASE)
 
-INSTALLDIR = $(PWD)/_build/install/default/lib/pgo_fdw
+INSTALLDIR = $(PWD)/_build/install/default/lib/pgo
 
 define PSQLRC_DATA
 set client_min_messages to warning;
