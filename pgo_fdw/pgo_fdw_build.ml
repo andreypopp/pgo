@@ -1,3 +1,9 @@
+open Dune_action_plugin.V1
+
+let spf = Printf.sprintf
+
+let driver_c =
+  {|
 #include <caml/callback.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,45 +16,45 @@ PG_MODULE_MAGIC;
 /*
  * SQL functions
  */
-extern Datum pgo_fdw_handler(PG_FUNCTION_ARGS);
-extern Datum pgo_fdw_validator(PG_FUNCTION_ARGS);
+extern Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS);
+extern Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS);
 
-PG_FUNCTION_INFO_V1(pgo_fdw_handler);
-PG_FUNCTION_INFO_V1(pgo_fdw_validator);
+PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_handler);
+PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator);
 
 /*
  * FDW callback routines
  */
-static void pgoGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
+static void PGO_FDW_PREFIXGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
                                  Oid foreigntableid);
-static void pgoGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
+static void PGO_FDW_PREFIXGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
                                Oid foreigntableid);
-static ForeignScan *pgoGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
+static ForeignScan *PGO_FDW_PREFIXGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
                                       Oid foreigntableid,
                                       ForeignPath *best_path, List *tlist,
                                       List *scan_clauses, Plan *outer_plan);
-static void pgoBeginForeignScan(ForeignScanState *node, int eflags);
-static TupleTableSlot *pgoIterateForeignScan(ForeignScanState *node);
-static void pgoReScanForeignScan(ForeignScanState *node);
-static void pgoEndForeignScan(ForeignScanState *node);
+static void PGO_FDW_PREFIXBeginForeignScan(ForeignScanState *node, int eflags);
+static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node);
+static void PGO_FDW_PREFIXReScanForeignScan(ForeignScanState *node);
+static void PGO_FDW_PREFIXEndForeignScan(ForeignScanState *node);
 
 /*
  * Foreign-data wrapper handler function
  */
-Datum pgo_fdw_handler(PG_FUNCTION_ARGS) {
+Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
   char *dummy_argv[] = {NULL};
   caml_startup(dummy_argv);
 
   FdwRoutine *fdwroutine = makeNode(FdwRoutine);
 
-  fdwroutine->GetForeignRelSize = pgoGetForeignRelSize;
-  fdwroutine->GetForeignPaths = pgoGetForeignPaths;
-  fdwroutine->GetForeignPlan = pgoGetForeignPlan;
+  fdwroutine->GetForeignRelSize = PGO_FDW_PREFIXGetForeignRelSize;
+  fdwroutine->GetForeignPaths = PGO_FDW_PREFIXGetForeignPaths;
+  fdwroutine->GetForeignPlan = PGO_FDW_PREFIXGetForeignPlan;
   fdwroutine->ExplainForeignScan = NULL;
-  fdwroutine->BeginForeignScan = pgoBeginForeignScan;
-  fdwroutine->IterateForeignScan = pgoIterateForeignScan;
-  fdwroutine->ReScanForeignScan = pgoReScanForeignScan;
-  fdwroutine->EndForeignScan = pgoEndForeignScan;
+  fdwroutine->BeginForeignScan = PGO_FDW_PREFIXBeginForeignScan;
+  fdwroutine->IterateForeignScan = PGO_FDW_PREFIXIterateForeignScan;
+  fdwroutine->ReScanForeignScan = PGO_FDW_PREFIXReScanForeignScan;
+  fdwroutine->EndForeignScan = PGO_FDW_PREFIXEndForeignScan;
   fdwroutine->AnalyzeForeignTable = NULL;
 
   PG_RETURN_POINTER(fdwroutine);
@@ -56,9 +62,9 @@ Datum pgo_fdw_handler(PG_FUNCTION_ARGS) {
 
 /*
  * Validate the generic options given to a FOREIGN DATA WRAPPER, SERVER
- * USER MAPPING or FOREIGN TABLE that uses pgo_fdw.
+ * USER MAPPING or FOREIGN TABLE that uses PGO_FDW_PREFIX.
  */
-Datum pgo_fdw_validator(PG_FUNCTION_ARGS) {
+Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS) {
   /* no-op */
   PG_RETURN_VOID();
 }
@@ -66,15 +72,15 @@ Datum pgo_fdw_validator(PG_FUNCTION_ARGS) {
 /*
  * Estimate relation size.
  */
-static void pgoGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
+static void PGO_FDW_PREFIXGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
                                  Oid foreigntableid) {
-  pgo_fdw_getForeignRelSize(root, baserel, foreigntableid);
+  PGO_FDW_PREFIX_getForeignRelSize(root, baserel, foreigntableid);
 }
 
 /*
  * Create Possible access paths for a scan on the foreign table
  */
-static void pgoGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
+static void PGO_FDW_PREFIXGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
                                Oid foreigntableid) {
   add_path(baserel,
            (Path *)create_foreignscan_path(root, baserel, NULL, baserel->rows,
@@ -89,7 +95,7 @@ static void pgoGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
 /*
  * Create a ForeignScan plan node for scanning the foreign table
  */
-static ForeignScan *pgoGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
+static ForeignScan *PGO_FDW_PREFIXGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
                                       Oid foreigntableid,
                                       ForeignPath *best_path, List *tlist,
                                       List *scan_clauses, Plan *outer_plan) {
@@ -103,22 +109,22 @@ static ForeignScan *pgoGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
 /*
  * Begin scan over table.
  */
-static void pgoBeginForeignScan(ForeignScanState *node, int eflags) {
+static void PGO_FDW_PREFIXBeginForeignScan(ForeignScanState *node, int eflags) {
   // Do nothing in EXPLAIN
   if (eflags & EXEC_FLAG_EXPLAIN_ONLY)
     return;
 
-  node->fdw_state = pgo_fdw_beginForeignScan(node, eflags);
+  node->fdw_state = PGO_FDW_PREFIX_beginForeignScan(node, eflags);
 }
 
 /*
  * Generate next record and store it into the ScanTupleSlot as a virtual tuple
  */
-static TupleTableSlot *pgoIterateForeignScan(ForeignScanState *node) {
+static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node) {
   TupleTableSlot *slot = node->ss.ss_ScanTupleSlot;
   ExecClearTuple(slot);
 
-  if (!pgo_fdw_shouldIterateForeignScan(node, node->fdw_state)) {
+  if (!PGO_FDW_PREFIX_shouldIterateForeignScan(node, node->fdw_state)) {
     return slot;
   }
 
@@ -133,7 +139,7 @@ static TupleTableSlot *pgoIterateForeignScan(ForeignScanState *node) {
   memset(nulls, true, sizeof(bool) * desc->natts);
 
   // Call into OCaml, expect it to fill `values` and `nulls`.
-  pgo_fdw_iterateForeignScan(node, node->fdw_state, desc, values, nulls);
+  PGO_FDW_PREFIX_iterateForeignScan(node, node->fdw_state, desc, values, nulls);
 
   HeapTuple tuple = heap_form_tuple(desc, values, nulls);
   ExecStoreHeapTuple(tuple, slot, false);
@@ -144,13 +150,30 @@ static TupleTableSlot *pgoIterateForeignScan(ForeignScanState *node) {
 /*
  * Rescan table, possibly with new parameters
  */
-static void pgoReScanForeignScan(ForeignScanState *node) {
-  pgo_fdw_rescanForeignScan(node, node->fdw_state);
+static void PGO_FDW_PREFIXReScanForeignScan(ForeignScanState *node) {
+  PGO_FDW_PREFIX_rescanForeignScan(node, node->fdw_state);
 }
 
 /*
  * Finish scanning foreign table and dispose objects used for this scan
  */
-static void pgoEndForeignScan(ForeignScanState *node) {
-  pgo_fdw_endForeignScan(node, node->fdw_state);
+static void PGO_FDW_PREFIXEndForeignScan(ForeignScanState *node) {
+  PGO_FDW_PREFIX_endForeignScan(node, node->fdw_state);
 }
+|}
+
+let action prefix =
+  let open O in
+  let filename_driver_c = Path.of_string @@ spf "%s_driver.c" prefix in
+  let filename_driver_ml = Path.of_string @@ spf "%s_driver.ml" prefix in
+  let+ () =
+    let template_prefix = Str.regexp "PGO_FDW_PREFIX" in
+    let driver_c = Str.global_replace template_prefix prefix driver_c in
+    write_file ~path:filename_driver_c ~data:driver_c
+  and+ () =
+    write_file ~path:filename_driver_ml
+      ~data:(spf {|include Pgo_fdw_desc.Def (Example_fdw) (Internal)|})
+  in
+  ()
+
+let () = run (action Sys.argv.(1))

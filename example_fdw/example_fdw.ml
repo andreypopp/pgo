@@ -1,6 +1,8 @@
 include Pgo_fdw.Make_fdw (struct
   open Pgo_api
 
+  let name = "example_fdw"
+
   type state = { mutable rownum : int }
 
   let get_foreign_rel_size rel_info = Rel_opt_info.set_rows rel_info 1000

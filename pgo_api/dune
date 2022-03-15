@@ -1,8 +1,9 @@
 (library
  (name pgo_api)
+ (public_name pgo.api)
  (modules pgo_api internal)
  (synopsis "Bindings to PostgreSQL APIs")
- (libraries ctypes.stubs pgo_typ pgo_api_desc)
+ (libraries ctypes.stubs pgo.typ pgo.api_desc)
  (foreign_stubs
    (language c)
    (names pgo_api internal)
@@ -14,6 +15,7 @@
 
 (library
  (name pgo_api_desc)
+ (public_name pgo.api_desc)
  (modules pgo_api_desc)
  (libraries ctypes.stubs pgo_typ))
 
@@ -29,3 +31,11 @@
 (rule
  (targets internal.c)
  (action  (run ./pgo_api_gen.exe c %{targets})))
+
+
+(install
+ (package pgo)
+ (section lib)
+ (files
+   (../config/cflags.sexp as api/cflags.sexp)
+   ))

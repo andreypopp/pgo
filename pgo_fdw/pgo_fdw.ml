@@ -7,6 +7,8 @@ module type FDW = sig
 
   type state
 
+  val name : string
+
   val get_foreign_rel_size : Rel_opt_info.t ptr -> unit
 
   val begin_foreign_scan : unit -> state
@@ -22,6 +24,8 @@ end
 
 module Make_fdw (Fdw : FDW) : Pgo_fdw_desc.FDW_INTERNAL = struct
   open Ctypes
+
+  let prefix = Fdw.name
 
   let get_foreign_rel_size _root baserel _oid =
     Fdw.get_foreign_rel_size baserel;

@@ -4,6 +4,8 @@ open Pgo_typ
 module type FDW_INTERNAL = sig
   open Ctypes
 
+  val prefix : string
+
   val get_foreign_rel_size :
     Planner_info.t structure ptr -> Rel_opt_info.t ptr -> oid -> unit
 
@@ -26,20 +28,6 @@ module type FDW_INTERNAL = sig
     Foreign_scan_state.t structure ptr -> unit ptr -> unit
 end
 
-module Dummy_fdw : FDW_INTERNAL = struct
-  let get_foreign_rel_size _ = assert false
-
-  let begin_foreign_scan _ = assert false
-
-  let end_foreign_scan _ = assert false
-
-  let should_iterate_foreign_scan _ = assert false
-
-  let iterate_foreign_scan _ = assert false
-
-  let rescan_foreign_scan _ = assert false
-end
-
 module Def (Api : FDW_INTERNAL) (I : Cstubs_inverted.INTERNAL) = struct
   let () = I.typedef Planner_info.t "PlannerInfo"
 
@@ -49,28 +37,35 @@ module Def (Api : FDW_INTERNAL) (I : Cstubs_inverted.INTERNAL) = struct
 
   let () = I.typedef Rel_opt_info.t "RelOptInfo"
 
+  let spf = Printf.sprintf
+
   let () =
-    I.internal "pgo_fdw_getForeignRelSize"
+    I.internal
+      (spf "%s_getForeignRelSize" Api.prefix)
       (ptr Planner_info.t @-> ptr Rel_opt_info.t @-> oid @-> returning void)
       Api.get_foreign_rel_size
 
   let () =
-    I.internal "pgo_fdw_beginForeignScan"
+    I.internal
+      (spf "%s_beginForeignScan" Api.prefix)
       (ptr Foreign_scan_state.t @-> int @-> returning (ptr void))
       Api.begin_foreign_scan
 
   let () =
-    I.internal "pgo_fdw_endForeignScan"
+    I.internal
+      (spf "%s_endForeignScan" Api.prefix)
       (ptr Foreign_scan_state.t @-> ptr void @-> returning void)
       Api.end_foreign_scan
 
   let () =
-    I.internal "pgo_fdw_shouldIterateForeignScan"
+    I.internal
+      (spf "%s_shouldIterateForeignScan" Api.prefix)
       (ptr Foreign_scan_state.t @-> ptr void @-> returning bool)
       Api.should_iterate_foreign_scan
 
   let () =
-    I.internal "pgo_fdw_iterateForeignScan"
+    I.internal
+      (spf "%s_iterateForeignScan" Api.prefix)
       (ptr Foreign_scan_state.t
       @-> ptr void
       @-> ptr Tuple_desc.t
@@ -80,7 +75,8 @@ module Def (Api : FDW_INTERNAL) (I : Cstubs_inverted.INTERNAL) = struct
       Api.iterate_foreign_scan
 
   let () =
-    I.internal "pgo_fdw_rescanForeignScan"
+    I.internal
+      (spf "%s_rescanForeignScan" Api.prefix)
       (ptr Foreign_scan_state.t @-> ptr void @-> returning void)
       Api.rescan_foreign_scan
 end

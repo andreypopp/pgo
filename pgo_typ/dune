@@ -4,12 +4,14 @@
 
 (library
  (name pgo_typ)
+ (public_name pgo.typ)
  (synopsis "pgo type definitions")
  (modules pgo_typ internal)
- (libraries pgo_typ_desc ctypes.stubs))
+ (libraries pgo.typ_desc ctypes.stubs))
 
 (library
  (name pgo_typ_desc)
+ (public_name pgo.typ_desc)
  (modules pgo_typ_desc)
  (libraries ctypes.stubs))
 

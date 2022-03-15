@@ -28,15 +28,15 @@ test-db:
 	@dropdb --if-exists $(PGDATABASE)
 	@createdb $(PGDATABASE)
 
-INSTALLDIR = $(PWD)/_build/install/default/lib/pgo
+INSTALLDIR = $(PWD)/_build/install/default/lib/pgo_example
 
 define PSQLRC_DATA
 set client_min_messages to warning;
 set dynamic_library_path = '$(INSTALLDIR):$libdir';
 begin;
-\\i $(INSTALLDIR)/pgo_fdw.sql
+\\i $(INSTALLDIR)/example_fdw.sql
 commit;
-load 'pgo_fdw.so';
+load 'example_fdw.so';
 set client_min_messages to notice;
 endef
 export PSQLRC_DATA
