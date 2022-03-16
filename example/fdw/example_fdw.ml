@@ -1,20 +1,32 @@
-include Pgo_fdw.Make_fdw (struct
+open Pgo_fdw
+
+include Make_fdw (struct
   open Pgo_api
-
-  type options = { city : string }
-
-  type state = { mutable rownum : int; options : options }
 
   let name = "example_fdw"
 
-  let validate =
-    Pgo_fdw.Validate.(
+  type wrapper_options = unit
+
+  let validate_wrapper_options = Val_def.const ()
+
+  type server_options = unit
+
+  let validate_server_options = Val_def.const ()
+
+  type table_options = { city : string }
+
+  let validate_table_options =
+    Val_def.(
       let+ city = string "city" in
       Ok { city })
 
+  type state = { mutable rownum : int; options : table_options }
+
   let get_foreign_rel_size rel_info = Rel_opt_info.set_rows rel_info 1000
 
-  let begin_foreign_scan options = { rownum = 0; options }
+  let begin_foreign_scan
+      ~wrapper_options:() ~server_options:() ~table_options:options () =
+    { rownum = 0; options }
 
   let end_foreign_scan _state = ()
 

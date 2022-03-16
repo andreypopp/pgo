@@ -3,7 +3,7 @@
   (name pgo_fdw)
   (public_name pgo.fdw)
   (libraries pgo_api pgo_fdw_desc)
-  (modules pgo_fdw validate)
+  (modules pgo_fdw val_def)
   )
 
 ;; Provides descriptions of what should be exposed to the

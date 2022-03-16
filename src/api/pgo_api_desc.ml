@@ -35,4 +35,11 @@ module Def (F : Cstubs.FOREIGN) = struct
 
   let getForeignTable =
     foreign "GetForeignTable" (oid @-> returning (ptr Foreign_table.t))
+
+  let getForeignServer =
+    foreign "GetForeignServer" (oid @-> returning (ptr Foreign_server.t))
+
+  let getForeignDataWrapper =
+    foreign "GetForeignDataWrapper"
+      (oid @-> returning (ptr Foreign_data_wrapper.t))
 end

@@ -6,7 +6,7 @@ module type FDW_INTERNAL = sig
 
   val prefix : string
 
-  val validator : Pg_list.t structure ptr option -> unit
+  val validator : Pg_list.t structure ptr option -> oid -> unit
 
   val get_foreign_rel_size :
     Planner_info.t structure ptr -> Rel_opt_info.t ptr -> oid -> unit
@@ -44,7 +44,7 @@ module Def (Api : FDW_INTERNAL) (I : Cstubs_inverted.INTERNAL) = struct
   let () =
     I.internal
       (spf "%s_validator" Api.prefix)
-      (ptr_opt Pg_list.t @-> returning void)
+      (ptr_opt Pg_list.t @-> oid @-> returning void)
       Api.validator
 
   let () =

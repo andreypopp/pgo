@@ -63,7 +63,8 @@ Datum PGO_FDW_PREFIX_validator0(PG_FUNCTION_ARGS) {
   char *dummy_argv[] = {NULL};
   caml_startup(dummy_argv);
 	List *options = untransformRelOptions(PG_GETARG_DATUM(0));
-  PGO_FDW_PREFIX_validator(options);
+	Oid oid_class = PG_GETARG_DATUM(1);
+  PGO_FDW_PREFIX_validator(options, oid_class);
   PG_RETURN_VOID();
 }
 

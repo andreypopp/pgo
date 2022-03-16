@@ -137,7 +137,45 @@ module Def (S : Cstubs_structs.TYPE) = struct
 
     let serverid = field t "serverid" oid
 
-    let options = field t "options" (ptr Pg_list.t)
+    let options = field t "options" (ptr_opt Pg_list.t)
+
+    let () = seal t
+  end
+
+  module Foreign_server = struct
+    type t
+
+    let t : t structure typ = structure "ForeignServer"
+
+    let serverid = field t "serverid" oid
+
+    let fdwid = field t "fdwid" oid
+
+    let owner = field t "owner" oid
+
+    let servername = field t "servername" string
+
+    let servertype = field t "servertype" string_opt
+
+    let serverversion = field t "serverversion" string_opt
+
+    let options = field t "options" (ptr_opt Pg_list.t)
+
+    let () = seal t
+  end
+
+  module Foreign_data_wrapper = struct
+    type t
+
+    let t : t structure typ = structure "ForeignDataWrapper"
+
+    let fdwid = field t "fdwid" oid
+
+    let owner = field t "owner" oid
+
+    let fdwname = field t "fdwname" string
+
+    let options = field t "options" (ptr_opt Pg_list.t)
 
     let () = seal t
   end
@@ -150,5 +188,14 @@ module Def (S : Cstubs_structs.TYPE) = struct
     let defname = field t "defname" string
 
     let () = seal t
+  end
+
+  module Oid_class = struct
+    let foreignDataWrapperRelationId =
+      S.constant "ForeignDataWrapperRelationId" oid
+
+    let foreignServerRelationId = S.constant "ForeignServerRelationId" oid
+
+    let foreignTableRelationId = S.constant "ForeignTableRelationId" oid
   end
 end
