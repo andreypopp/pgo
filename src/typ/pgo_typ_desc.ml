@@ -32,9 +32,31 @@ module Def (S : Cstubs_structs.TYPE) = struct
     let panic = S.constant "PANIC" S.int
   end
 
+  module Exec_flag = struct
+    let explain_only = S.constant "EXEC_FLAG_EXPLAIN_ONLY" S.int
+
+    let rewind = S.constant "EXEC_FLAG_REWIND" S.int
+
+    let backward = S.constant "EXEC_FLAG_BACKWARD" S.int
+
+    let mark = S.constant "EXEC_FLAG_MARK" S.int
+
+    let skip_triggers = S.constant "EXEC_FLAG_SKIP_TRIGGERS" S.int
+
+    let with_no_data = S.constant "EXEC_FLAG_WITH_NO_DATA" S.int
+  end
+
   type oid = Unsigned.uint
 
   let oid = uint
+
+  module Pg_list = struct
+    type t
+
+    let t : t structure typ = structure "List"
+
+    let () = seal t
+  end
 
   module Datum = struct
     type t = Uintptr.t
@@ -54,10 +76,36 @@ module Def (S : Cstubs_structs.TYPE) = struct
     let () = seal t
   end
 
+  module Relation_data = struct
+    type t
+
+    let t : t structure typ = structure "RelationData"
+
+    let rd_id = field t "rd_id" oid
+
+    let () = seal t
+  end
+
+  module Scan_state = struct
+    type t
+
+    let t : t structure typ = structure "ScanState"
+
+    let currentRelation = field t "ss_currentRelation" (ptr_opt Relation_data.t)
+
+    let () = seal t
+  end
+
   module Foreign_scan_state = struct
     type t
 
     let t : t structure typ = structure "ForeignScanState"
+
+    let scan_state = field t "ss" Scan_state.t
+
+    let fdw_state = field t "fdw_state" (ptr void)
+
+    let () = seal t
   end
 
   module Planner_info = struct
@@ -76,6 +124,30 @@ module Def (S : Cstubs_structs.TYPE) = struct
     let rows = field t "rows" int
 
     let fdw_private = field t "fdw_private" (ptr void)
+
+    let () = seal t
+  end
+
+  module Foreign_table = struct
+    type t
+
+    let t : t structure typ = structure "ForeignTable"
+
+    let relid = field t "relid" oid
+
+    let serverid = field t "serverid" oid
+
+    let options = field t "options" (ptr Pg_list.t)
+
+    let () = seal t
+  end
+
+  module Def_elem = struct
+    type t
+
+    let t : t structure typ = structure "DefElem"
+
+    let defname = field t "defname" string
 
     let () = seal t
   end

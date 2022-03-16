@@ -17,26 +17,21 @@ PG_MODULE_MAGIC;
  * SQL functions
  */
 extern Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS);
-extern Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS);
+extern Datum PGO_FDW_PREFIX_validator0(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_handler);
-PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator);
+PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator0);
 
 /*
  * FDW callback routines
  */
-static void PGO_FDW_PREFIXGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
-                                 Oid foreigntableid);
 static void PGO_FDW_PREFIXGetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
                                Oid foreigntableid);
 static ForeignScan *PGO_FDW_PREFIXGetForeignPlan(PlannerInfo *root, RelOptInfo *baserel,
                                       Oid foreigntableid,
                                       ForeignPath *best_path, List *tlist,
                                       List *scan_clauses, Plan *outer_plan);
-static void PGO_FDW_PREFIXBeginForeignScan(ForeignScanState *node, int eflags);
 static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node);
-static void PGO_FDW_PREFIXReScanForeignScan(ForeignScanState *node);
-static void PGO_FDW_PREFIXEndForeignScan(ForeignScanState *node);
 
 /*
  * Foreign-data wrapper handler function
@@ -47,14 +42,14 @@ Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
 
   FdwRoutine *fdwroutine = makeNode(FdwRoutine);
 
-  fdwroutine->GetForeignRelSize = PGO_FDW_PREFIXGetForeignRelSize;
+  fdwroutine->GetForeignRelSize = PGO_FDW_PREFIX_getForeignRelSize;
   fdwroutine->GetForeignPaths = PGO_FDW_PREFIXGetForeignPaths;
   fdwroutine->GetForeignPlan = PGO_FDW_PREFIXGetForeignPlan;
   fdwroutine->ExplainForeignScan = NULL;
-  fdwroutine->BeginForeignScan = PGO_FDW_PREFIXBeginForeignScan;
+  fdwroutine->BeginForeignScan = PGO_FDW_PREFIX_beginForeignScan;
   fdwroutine->IterateForeignScan = PGO_FDW_PREFIXIterateForeignScan;
-  fdwroutine->ReScanForeignScan = PGO_FDW_PREFIXReScanForeignScan;
-  fdwroutine->EndForeignScan = PGO_FDW_PREFIXEndForeignScan;
+  fdwroutine->ReScanForeignScan = PGO_FDW_PREFIX_rescanForeignScan;
+  fdwroutine->EndForeignScan = PGO_FDW_PREFIX_endForeignScan;
   fdwroutine->AnalyzeForeignTable = NULL;
 
   PG_RETURN_POINTER(fdwroutine);
@@ -64,17 +59,12 @@ Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
  * Validate the generic options given to a FOREIGN DATA WRAPPER, SERVER
  * USER MAPPING or FOREIGN TABLE that uses PGO_FDW_PREFIX.
  */
-Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS) {
-  /* no-op */
+Datum PGO_FDW_PREFIX_validator0(PG_FUNCTION_ARGS) {
+  char *dummy_argv[] = {NULL};
+  caml_startup(dummy_argv);
+	List *options = untransformRelOptions(PG_GETARG_DATUM(0));
+  PGO_FDW_PREFIX_validator(options);
   PG_RETURN_VOID();
-}
-
-/*
- * Estimate relation size.
- */
-static void PGO_FDW_PREFIXGetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
-                                 Oid foreigntableid) {
-  PGO_FDW_PREFIX_getForeignRelSize(root, baserel, foreigntableid);
 }
 
 /*
@@ -107,26 +97,13 @@ static ForeignScan *PGO_FDW_PREFIXGetForeignPlan(PlannerInfo *root, RelOptInfo *
 }
 
 /*
- * Begin scan over table.
- */
-static void PGO_FDW_PREFIXBeginForeignScan(ForeignScanState *node, int eflags) {
-  // Do nothing in EXPLAIN
-  if (eflags & EXEC_FLAG_EXPLAIN_ONLY)
-    return;
-
-  node->fdw_state = PGO_FDW_PREFIX_beginForeignScan(node, eflags);
-}
-
-/*
  * Generate next record and store it into the ScanTupleSlot as a virtual tuple
  */
 static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node) {
   TupleTableSlot *slot = node->ss.ss_ScanTupleSlot;
   ExecClearTuple(slot);
 
-  if (!PGO_FDW_PREFIX_shouldIterateForeignScan(node, node->fdw_state)) {
-    return slot;
-  }
+  if (!PGO_FDW_PREFIX_shouldIterateForeignScan(node)) return slot;
 
   Relation rel = node->ss.ss_currentRelation;
   TupleDesc desc = RelationGetDescr(rel);
@@ -145,20 +122,6 @@ static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node) 
   ExecStoreHeapTuple(tuple, slot, false);
 
   return slot;
-}
-
-/*
- * Rescan table, possibly with new parameters
- */
-static void PGO_FDW_PREFIXReScanForeignScan(ForeignScanState *node) {
-  PGO_FDW_PREFIX_rescanForeignScan(node, node->fdw_state);
-}
-
-/*
- * Finish scanning foreign table and dispose objects used for this scan
- */
-static void PGO_FDW_PREFIXEndForeignScan(ForeignScanState *node) {
-  PGO_FDW_PREFIX_endForeignScan(node, node->fdw_state);
 }
 |}
 

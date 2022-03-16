@@ -44,4 +44,4 @@ export PSQLRC_DATA
 psql: build
 	@$(eval TMP := $(shell mktemp -d))
 	@echo "$$PSQLRC_DATA" > $(TMP)/psqlrc
-	@PSQLRC=$(TMP)/psqlrc psql -q
+	@PSQLRC=$(TMP)/psqlrc psql 

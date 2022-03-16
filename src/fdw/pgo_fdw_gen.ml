@@ -8,6 +8,8 @@ let generate prefix dirname =
   let module Dummy_fdw : Pgo_fdw_desc.FDW_INTERNAL = struct
     let prefix = prefix
 
+    let validator _ = assert false
+
     let get_foreign_rel_size _ = assert false
 
     let begin_foreign_scan _ = assert false

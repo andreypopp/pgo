@@ -2,7 +2,7 @@ drop foreign table if exists hello;
 drop server if exists hello;
 drop foreign data wrapper if exists example_fdw;
 drop function if exists example_fdw_handler();
-drop function if exists example_fdw_validator(text[], oid);
+drop function if exists example_fdw_validator0(text[], oid);
 
 create function example_fdw_handler()
   RETURNS fdw_handler
@@ -10,7 +10,7 @@ create function example_fdw_handler()
   language c strict
 ;
 
-create function example_fdw_validator(text[], oid)
+create function example_fdw_validator0(text[], oid)
   returns void
   as 'example_fdw.so'
   language c strict
@@ -18,7 +18,7 @@ create function example_fdw_validator(text[], oid)
 
 create foreign data wrapper example_fdw
   handler example_fdw_handler
-  validator example_fdw_validator
+  validator example_fdw_validator0
 ;
 
 create server hello foreign data wrapper example_fdw;
@@ -31,4 +31,5 @@ create foreign table if not exists hello (
     data jsonb
   )
   server hello
+  options (city 'St.Petersburg')
 ;

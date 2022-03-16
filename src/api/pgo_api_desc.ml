@@ -5,6 +5,8 @@ module Def (F : Cstubs.FOREIGN) = struct
 
   let elog = foreign "elog" (Elog_level.t @-> string @-> returning void)
 
+  let ereport = foreign "pgo_api_ereport" (string @-> returning void)
+
   module Datum = struct
     include Datum
 
@@ -18,4 +20,19 @@ module Def (F : Cstubs.FOREIGN) = struct
 
     let of_json_string = foreign "pgo_api_Datum_of_json" (string @-> returning t)
   end
+
+  module Pg_list = struct
+    include Pg_list
+
+    let length = foreign "list_length" (ptr Pg_list.t @-> returning int)
+
+    let nth = foreign "list_nth" (ptr Pg_list.t @-> int @-> returning (ptr void))
+  end
+
+  let defGetString = foreign "defGetString" (ptr Def_elem.t @-> returning string)
+
+  let defGetBoolean = foreign "defGetBoolean" (ptr Def_elem.t @-> returning bool)
+
+  let getForeignTable =
+    foreign "GetForeignTable" (oid @-> returning (ptr Foreign_table.t))
 end
