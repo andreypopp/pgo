@@ -15,10 +15,10 @@ PG_MODULE_MAGIC;
  * SQL functions
  */
 extern Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS);
-extern Datum PGO_FDW_PREFIX_validator0(PG_FUNCTION_ARGS);
+extern Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_handler);
-PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator0);
+PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator);
 
 /*
  * FDW callback routines
@@ -57,12 +57,12 @@ Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
  * Validate the generic options given to a FOREIGN DATA WRAPPER, SERVER
  * USER MAPPING or FOREIGN TABLE that uses PGO_FDW_PREFIX.
  */
-Datum PGO_FDW_PREFIX_validator0(PG_FUNCTION_ARGS) {
+Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS) {
   char *dummy_argv[] = {NULL};
   caml_startup(dummy_argv);
 	List *options = untransformRelOptions(PG_GETARG_DATUM(0));
 	Oid oid_class = PG_GETARG_DATUM(1);
-  PGO_FDW_PREFIX_validator(options, oid_class);
+  PGO_FDW_PREFIX_validator0(options, oid_class);
   PG_RETURN_VOID();
 }
 

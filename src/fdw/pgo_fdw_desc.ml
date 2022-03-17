@@ -43,7 +43,7 @@ module Def (Api : FDW_INTERNAL) (I : Cstubs_inverted.INTERNAL) = struct
 
   let () =
     I.internal
-      (spf "%s_validator" Api.prefix)
+      (spf "%s_validator0" Api.prefix)
       (ptr_opt Pg_list.t @-> oid @-> returning void)
       Api.validator
 
