@@ -1,4 +1,4 @@
-drop foreign table if exists hello;
+drop foreign table if exists process;
 drop server if exists hello;
 drop foreign data wrapper if exists example_fdw;
 drop function if exists example_fdw_handler();
@@ -23,12 +23,11 @@ create foreign data wrapper example_fdw
 
 create server hello foreign data wrapper example_fdw;
 
-create foreign table if not exists hello (
-    text text,
-    int bigint,
-    float double precision,
-    bool bool,
-    data jsonb
+create foreign table if not exists process (
+    pid int,
+    command text,
+    "user" text,
+    time text
   )
   server hello
   options (city 'St.Petersburg')

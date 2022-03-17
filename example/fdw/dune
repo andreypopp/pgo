@@ -1,6 +1,6 @@
 (library
   (name example_fdw)
-  (libraries pgo.fdw)
+  (libraries pgo.fdw stdio unix)
   (modules example_fdw))
 
 (executable

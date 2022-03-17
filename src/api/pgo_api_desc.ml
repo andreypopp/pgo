@@ -3,7 +3,7 @@ module Def (F : Cstubs.FOREIGN) = struct
   open! F
   include Pgo_typ
 
-  let elog = foreign "elog" (Elog_level.t @-> string @-> returning void)
+  let elog = foreign "pgo_api_elog" (Elog_level.t @-> string @-> returning void)
 
   let ereport = foreign "pgo_api_ereport" (string @-> returning void)
 
