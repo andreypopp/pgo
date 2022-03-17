@@ -59,3 +59,24 @@ module Def_elem = struct
 
   let get_bool v = defGetBoolean v
 end
+
+module Interval = struct
+  open Ctypes
+
+  type t = Interval.t structure
+
+  let t = Interval.t
+
+  let make ?(month = 0) ?(day = 0) mcs =
+    let v = make Interval.t in
+    setf v Interval.month (Int32.of_int_exn month);
+    setf v Interval.day (Int32.of_int_exn day);
+    setf v Interval.time (Int64.of_int_exn mcs);
+    v
+end
+
+module Datum = struct
+  include Datum
+
+  let of_pointer v = of_pointer (Ctypes.to_voidp v)
+end

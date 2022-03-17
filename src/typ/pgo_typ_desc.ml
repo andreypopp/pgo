@@ -64,6 +64,22 @@ module Def (S : Cstubs_structs.TYPE) = struct
     let t = uintptr_t
   end
 
+  module Interval = struct
+    type t
+
+    let t : t structure typ = structure "_Interval"
+
+    let t = typedef t "Interval"
+
+    let time = field t "time" int64_t
+
+    let day = field t "day" int32_t
+
+    let month = field t "month" int32_t
+
+    let () = seal t
+  end
+
   module Tuple_desc = struct
     type s
 

@@ -34,7 +34,7 @@ create foreign table if not exists ps (
     pid int,
     command text,
     username text,
-    time text
+    elapsed interval
   )
   server ps
 ;
@@ -44,7 +44,7 @@ create foreign table if not exists ps_unrestricted (
     pid int,
     command text,
     username text,
-    time text
+    elapsed interval
   )
   server ps
   options (show_command 'true')

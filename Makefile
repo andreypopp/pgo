@@ -38,6 +38,7 @@ begin;
 commit;
 load 'ps_fdw.so';
 set client_min_messages to notice;
+select pg_backend_pid();
 endef
 export PSQLRC_DATA
 

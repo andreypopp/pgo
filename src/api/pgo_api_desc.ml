@@ -19,6 +19,8 @@ module Def (F : Cstubs.FOREIGN) = struct
     let of_float = foreign "Float8GetDatum" (float @-> returning t)
 
     let of_json_string = foreign "pgo_api_Datum_of_json" (string @-> returning t)
+
+    let of_pointer = foreign "PointerGetDatum" (ptr void @-> returning t)
   end
 
   module Pg_list = struct
