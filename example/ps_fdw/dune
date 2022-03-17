@@ -1,0 +1,35 @@
+(library
+  (name ps_fdw)
+  (libraries unix base stdio pgo.fdw)
+  (flags :standard -open Base -open Stdio)
+  (modules :standard \ ps_fdw_driver internal))
+
+(executable
+ (name ps_fdw_driver)
+ (libraries ctypes ps_fdw)
+ (modules ps_fdw_driver internal)
+ (foreign_stubs
+   (language c)
+   (names ps_fdw_driver internal)
+   (flags :standard
+          (:include "%{lib:pgo.api:cflags.sexp}")
+          "-I."
+          ))
+ (flags :standard -linkall)
+ (modes (native shared_object)))
+
+(rule
+  (targets internal.c internal.h internal.ml)
+  (action (run pgo-fdw-gen ps_fdw .)))
+
+(rule
+  (targets ps_fdw_driver.c ps_fdw_driver.ml)
+  (action (run pgo-fdw-build ps_fdw)))
+
+(install
+ (package pgo_example)
+ (section lib)
+ (files
+   (ps_fdw_driver.so as ps_fdw.so)
+   ps_fdw.sql
+   ))

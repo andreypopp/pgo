@@ -3,7 +3,8 @@
  (public_name pgo.api)
  (modules pgo_api internal)
  (synopsis "Bindings to PostgreSQL APIs")
- (libraries ctypes.stubs pgo.typ pgo.api_desc)
+ (libraries base ctypes.stubs pgo.typ pgo.api_desc)
+ (flags :standard -open Base)
  (foreign_stubs
    (language c)
    (names pgo_api internal)
@@ -17,12 +18,14 @@
  (name pgo_api_desc)
  (public_name pgo.api_desc)
  (modules pgo_api_desc)
- (libraries ctypes.stubs pgo_typ))
+ (flags :standard -open Base)
+ (libraries base ctypes.stubs pgo_typ))
 
 (executable
  (name pgo_api_gen)
  (modules pgo_api_gen)
- (libraries pgo_api_desc ctypes.stubs))
+ (flags :standard -open Base -open Stdio)
+ (libraries base stdio ctypes.stubs pgo_api_desc))
 
 (rule
  (targets internal.ml)

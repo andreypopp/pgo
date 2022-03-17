@@ -1,5 +1,3 @@
-open Dune_action_plugin.V1
-
 let spf = Printf.sprintf
 
 let driver_c =
@@ -126,18 +124,18 @@ static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node) 
 }
 |}
 
-let action prefix =
-  let open O in
-  let filename_driver_c = Path.of_string @@ spf "%s_driver.c" prefix in
-  let filename_driver_ml = Path.of_string @@ spf "%s_driver.ml" prefix in
-  let+ () =
-    let template_prefix = Str.regexp "PGO_FDW_PREFIX" in
-    let driver_c = Str.global_replace template_prefix prefix driver_c in
-    write_file ~path:filename_driver_c ~data:driver_c
-  and+ () =
-    write_file ~path:filename_driver_ml
-      ~data:(spf {|include Pgo_fdw_desc.Def (Example_fdw) (Internal)|})
-  in
-  ()
+let run prefix =
+  Out_channel.with_file (spf "%s_driver.c" prefix) ~f:(fun oc ->
+      let template_prefix = Str.regexp "PGO_FDW_PREFIX" in
+      let data = Str.global_replace template_prefix prefix driver_c in
+      Out_channel.output_string oc data);
+  Out_channel.with_file (spf "%s_driver.ml" prefix) ~f:(fun oc ->
+      let data =
+        let mod_name = String.capitalize prefix in
+        spf {|include Pgo_fdw_desc.Def (%s) (Internal)|} mod_name
+      in
+      Out_channel.output_string oc data)
 
-let () = run (action Sys.argv.(1))
+let () =
+  let argv = Sys.get_argv () in
+  run argv.(1)

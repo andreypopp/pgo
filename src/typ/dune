@@ -7,18 +7,21 @@
  (public_name pgo.typ)
  (synopsis "pgo type definitions")
  (modules pgo_typ internal)
- (libraries pgo.typ_desc ctypes.stubs))
+ (flags :standard -open Base)
+ (libraries base pgo.typ_desc ctypes.stubs))
 
 (library
  (name pgo_typ_desc)
  (public_name pgo.typ_desc)
  (modules pgo_typ_desc)
- (libraries ctypes.stubs))
+ (flags :standard -open Base)
+ (libraries base ctypes.stubs))
 
 (executable
  (name pgo_typ_gen)
  (modules pgo_typ_gen)
- (libraries pgo_typ_desc ctypes.stubs))
+ (flags :standard -open Base -open Stdio)
+ (libraries base stdio pgo_typ_desc ctypes.stubs))
 
 (rule
  (targets pgo_typ.c)

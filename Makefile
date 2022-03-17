@@ -34,9 +34,9 @@ define PSQLRC_DATA
 set client_min_messages to warning;
 set dynamic_library_path = '$(INSTALLDIR):$libdir';
 begin;
-\\i $(INSTALLDIR)/example_fdw.sql
+\\i $(INSTALLDIR)/ps_fdw.sql
 commit;
-load 'example_fdw.so';
+load 'ps_fdw.so';
 set client_min_messages to notice;
 endef
 export PSQLRC_DATA

@@ -22,27 +22,25 @@ let generate prefix dirname =
 
     let rescan_foreign_scan _ = assert false
   end in
-  let path basename = Filename.concat dirname basename in
-  let ml_fd = open_out (path "internal.ml") in
-  let c_fd = open_out (path "internal.c") in
-  let h_fd = open_out (path "internal.h") in
+  let path basename = Caml.Filename.concat dirname basename in
   let stubs =
     (module Pgo_fdw_desc.Def (Dummy_fdw) : Cstubs_inverted.BINDINGS)
   in
-  Cstubs_inverted.write_ml (Format.formatter_of_out_channel ml_fd) ~prefix stubs;
+  Out_channel.with_file (path "internal.ml") ~f:(fun oc ->
+      Cstubs_inverted.write_ml
+        (Caml.Format.formatter_of_out_channel oc)
+        ~prefix stubs);
+  Out_channel.with_file (path "internal.c") ~f:(fun oc ->
+      Caml.Format.fprintf
+        (Caml.Format.formatter_of_out_channel oc)
+        "%s\n%a" c_prelude
+        (Cstubs_inverted.write_c ~prefix)
+        stubs);
+  Out_channel.with_file (path "internal.h") ~f:(fun oc ->
+      Cstubs_inverted.write_c_header
+        (Caml.Format.formatter_of_out_channel oc)
+        ~prefix stubs)
 
-  Format.fprintf
-    (Format.formatter_of_out_channel c_fd)
-    "%s\n%a" c_prelude
-    (Cstubs_inverted.write_c ~prefix)
-    stubs;
-
-  Cstubs_inverted.write_c_header
-    (Format.formatter_of_out_channel h_fd)
-    ~prefix stubs;
-
-  close_out h_fd;
-  close_out c_fd;
-  close_out ml_fd
-
-let () = generate Sys.argv.(1) Sys.argv.(2)
+let () =
+  let argv = Sys.get_argv () in
+  generate argv.(1) argv.(2)

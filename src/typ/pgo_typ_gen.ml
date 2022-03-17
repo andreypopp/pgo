@@ -3,12 +3,12 @@ let c_headers = {|
 |}
 
 let main () =
-  let filename = Array.get Sys.argv 1 in
-  let stubs_out = open_out filename in
-  let stubs_fmt = Format.formatter_of_out_channel stubs_out in
-  Format.fprintf stubs_fmt "%s@\n" c_headers;
-  Cstubs_structs.write_c stubs_fmt (module Pgo_typ_desc.Def);
-  Format.pp_print_flush stubs_fmt ();
-  close_out stubs_out
+  let argv = Sys.get_argv () in
+  let filename = argv.(1) in
+  Out_channel.with_file filename ~f:(fun oc ->
+      let fmt = Caml.Format.formatter_of_out_channel oc in
+      Caml.Format.fprintf fmt "%s@\n" c_headers;
+      Cstubs_structs.write_c fmt (module Pgo_typ_desc.Def);
+      Caml.Format.pp_print_flush fmt ())
 
 let () = main ()

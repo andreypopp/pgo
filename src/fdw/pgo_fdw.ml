@@ -48,7 +48,7 @@ module Make_fdw (Fdw : FDW) : Pgo_fdw_desc.FDW_INTERNAL = struct
   let validate_opts validator opts =
     Val_def.validate validator
       (opts
-      |> Option.map (Pg_list.to_ptr_list Pgo_typ.Def_elem.t)
+      |> Option.map ~f:(Pg_list.to_ptr_list Pgo_typ.Def_elem.t)
       |> Option.value ~default:[])
 
   let validator opts oid =
@@ -58,17 +58,17 @@ module Make_fdw (Fdw : FDW) : Pgo_fdw_desc.FDW_INTERNAL = struct
     then ignore (validate_opts Fdw.validate_server_options opts)
     else if Unsigned.UInt.equal oid Pgo_api.Oid_class.foreignTableRelationId
     then ignore (validate_opts Fdw.validate_table_options opts)
-    else ereport "unable to validate this object"
+    else ereport "unable to validate options for an unknown object"
 
   let get_foreign_rel_size _root baserel _oid =
     Fdw.get_foreign_rel_size baserel;
     setf !@baserel Rel_opt_info.fdw_private null
 
   let begin_foreign_scan scan_state eflags =
-    if Int.logand eflags Exec_flag.explain_only = 0 then
+    if eflags land Exec_flag.explain_only = 0 then
       let f_table =
         let ss = getf !@scan_state Foreign_scan_state.scan_state in
-        let rel = Option.get @@ getf ss Scan_state.currentRelation in
+        let rel = Option.value_exn (getf ss Scan_state.currentRelation) in
         let oid = getf !@rel Relation_data.rd_id in
         getForeignTable oid
       in

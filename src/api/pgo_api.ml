@@ -2,10 +2,10 @@ include Pgo_api_desc.Def (Internal)
 
 let elogf lvl fmt =
   let kerr _ =
-    let message = Format.flush_str_formatter () in
+    let message = Caml.Format.flush_str_formatter () in
     elog lvl message
   in
-  Format.kfprintf kerr Format.str_formatter fmt
+  Caml.Format.kfprintf kerr Caml.Format.str_formatter fmt
 
 let ereport msg =
   ereport msg;
@@ -13,10 +13,10 @@ let ereport msg =
 
 let ereportf fmt =
   let kerr _ =
-    let message = Format.flush_str_formatter () in
+    let message = Caml.Format.flush_str_formatter () in
     ereport message
   in
-  Format.kfprintf kerr Format.str_formatter fmt
+  Caml.Format.kfprintf kerr Caml.Format.str_formatter fmt
 
 module Rel_opt_info = struct
   include Rel_opt_info

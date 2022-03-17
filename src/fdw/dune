@@ -2,7 +2,8 @@
 (library
   (name pgo_fdw)
   (public_name pgo.fdw)
-  (libraries pgo_api pgo_fdw_desc)
+  (libraries pgo_api pgo_fdw_desc base)
+  (flags :standard -open Base)
   (modules pgo_fdw val_def)
   )
 
@@ -15,15 +16,17 @@
  (libraries pgo_typ ctypes))
 
 (executable
-  (name pgo_fdw_build)
-  (package pgo)
-  (public_name pgo-fdw-build)
-  (modules pgo_fdw_build)
-  (libraries dune-action-plugin str))
+ (name pgo_fdw_build)
+ (package pgo)
+ (public_name pgo-fdw-build)
+ (modules pgo_fdw_build)
+ (flags :standard -open Base -open Stdio)
+ (libraries base stdio dune-action-plugin str))
 
 (executable 
  (name pgo_fdw_gen)
  (package pgo)
  (public_name pgo-fdw-gen)
  (modules pgo_fdw_gen)
- (libraries pgo_fdw_desc ctypes ctypes.stubs))
+ (flags :standard -open Base -open Stdio)
+ (libraries base stdio pgo_fdw_desc ctypes ctypes.stubs))
