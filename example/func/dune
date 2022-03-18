@@ -1,0 +1,41 @@
+(library
+  (name func)
+  (libraries unix base stdio ctypes.stubs pgo.pgtypes)
+  (flags :standard -open Base -open Stdio)
+  (modules :standard \ gen internal func_driver))
+
+(executable
+ (name func_driver)
+ (libraries pgo.api ctypes func)
+ (modules internal func_driver)
+ (foreign_stubs
+   (language c)
+   (names func_driver internal)
+   (flags :standard
+          (:include "%{lib:pgo.api:cflags.sexp}")
+          "-I."
+          ))
+ (flags :standard -linkall)
+ (modes (native shared_object)))
+
+(rule
+  (targets gen.ml)
+  (action (run pgtypes-gen func)))
+
+(executable 
+ (name gen)
+ (modules gen)
+ (flags :standard -open Base -open Stdio)
+ (libraries base stdio func ctypes ctypes.stubs))
+
+(rule
+  (targets internal.c internal.h internal.ml func_driver.ml func_driver.c)
+  (action (run ./gen.exe)))
+
+(install
+ (package pgo_example)
+ (section lib)
+ (files
+   (func_driver.so as func.so)
+   func.sql
+   ))

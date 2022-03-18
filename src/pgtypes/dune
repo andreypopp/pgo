@@ -1,0 +1,16 @@
+(library
+  (name pgtypes)
+  (public_name pgo.pgtypes)
+  (modules :standard \ pgtypes_gen)
+  (libraries ctypes stdio base)
+  (flags :standard -open Base -open Stdio)
+  )
+
+
+(executable 
+  (name pgtypes_gen)
+  (package pgo)
+  (public_name pgtypes-gen)
+  (modules pgtypes_gen)
+  (flags :standard -open Base -open Stdio)
+  (libraries base stdio ctypes ctypes.stubs))
