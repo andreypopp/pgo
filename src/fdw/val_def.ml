@@ -5,6 +5,7 @@ type _ t =
   | Val_bool : string -> bool t
   | Val_bool_opt : string -> bool option t
   | Val_map : 'a t * ('a -> ('b, string) Result.t) -> 'b t
+  | Val_bind : 'a t * ('a -> ('b t, string) Result.t) -> 'b t
   | Val_both : 'a t * 'b t -> ('a * 'b) t
 
 let const v = Val_const v
@@ -19,7 +20,11 @@ let bool_opt name = Val_bool_opt name
 
 let map v f = Val_map (v, f)
 
+let bind v f = Val_bind (v, f)
+
 let both a b = Val_both (a, b)
+
+let ( let* ) = bind
 
 let ( let+ ) = map
 
@@ -49,6 +54,10 @@ let validate schema (options : Pgo_api.Def_elem.t list) =
     | Val_map (v, f) -> (
       match f (aux v) with
       | Ok v -> v
+      | Error err -> Pgo_api.ereport err)
+    | Val_bind (v, f) -> (
+      match f (aux v) with
+      | Ok v -> aux v
       | Error err -> Pgo_api.ereport err)
     | Val_both (a, b) -> (aux a, aux b)
     | Val_string name -> Pgo_api.Def_elem.get_string (find name)

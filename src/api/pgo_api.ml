@@ -18,6 +18,8 @@ let ereportf fmt =
   in
   Caml.Format.kfprintf kerr Caml.Format.str_formatter fmt
 
+let get_config_option name = get_config_option name Ctypes.null true
+
 module Rel_opt_info = struct
   include Rel_opt_info
 

@@ -7,6 +7,10 @@ module Def (F : Cstubs.FOREIGN) = struct
 
   let ereport = foreign "pgo_api_ereport" (string @-> returning void)
 
+  let get_config_option =
+    foreign "GetConfigOptionByName"
+      (string @-> ptr void @-> bool @-> returning string_opt)
+
   module Datum = struct
     include Datum
 

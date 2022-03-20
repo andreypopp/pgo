@@ -24,6 +24,7 @@
 #include "utils/elog.h"
 #include "utils/memutils.h"
 #include "utils/rel.h"
+#include "utils/guc.h"
 #include "utils/jsonb.h"
 #include "utils/builtins.h"
 // clang-format on
