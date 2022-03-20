@@ -20,6 +20,11 @@ extern Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_handler);
 PG_FUNCTION_INFO_V1(PGO_FDW_PREFIX_validator);
 
+void _PG_init(void) {
+  char *dummy_argv[] = {NULL};
+  caml_startup(dummy_argv);
+}
+
 /*
  * FDW callback routines
  */
@@ -35,9 +40,6 @@ static TupleTableSlot *PGO_FDW_PREFIXIterateForeignScan(ForeignScanState *node);
  * Foreign-data wrapper handler function
  */
 Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
-  char *dummy_argv[] = {NULL};
-  caml_startup(dummy_argv);
-
   FdwRoutine *fdwroutine = makeNode(FdwRoutine);
 
   fdwroutine->GetForeignRelSize = PGO_FDW_PREFIX_getForeignRelSize;
@@ -58,8 +60,6 @@ Datum PGO_FDW_PREFIX_handler(PG_FUNCTION_ARGS) {
  * USER MAPPING or FOREIGN TABLE that uses PGO_FDW_PREFIX.
  */
 Datum PGO_FDW_PREFIX_validator(PG_FUNCTION_ARGS) {
-  char *dummy_argv[] = {NULL};
-  caml_startup(dummy_argv);
 	List *options = untransformRelOptions(PG_GETARG_DATUM(0));
 	Oid oid_class = PG_GETARG_DATUM(1);
   PGO_FDW_PREFIX_validator0(options, oid_class);

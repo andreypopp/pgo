@@ -2,7 +2,7 @@
   (name pgtypes)
   (public_name pgo.pgtypes)
   (modules :standard \ pgtypes_gen)
-  (libraries ctypes stdio base)
+  (libraries ctypes stdio base pgo.api)
   (flags :standard -open Base -open Stdio)
   )
 

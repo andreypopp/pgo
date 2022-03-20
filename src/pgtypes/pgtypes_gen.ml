@@ -30,10 +30,10 @@ let run () =
   Out_channel.with_file "NAME_driver.ml" ~f:(fun oc ->
       let fmt = Caml.Format.formatter_of_out_channel oc in
       Caml.Format.fprintf fmt
-        {|module Ctypes_bindings = Pgtypes.To_ctypes(MODULE.Def)@.|};
-      Caml.Format.fprintf fmt
-        {|include Ctypes_bindings.Bindings(Internal)@.|};
-        )
+        {|
+module Ctypes_bindings = Pgtypes.To_ctypes(MODULE.Def)
+include Ctypes_bindings.Bindings(Internal)
+        |})
 
 let () = run ()
   |ocaml}
