@@ -1,0 +1,35 @@
+(library
+  (name github_fdw)
+  (libraries unix base stdio pgo.fdw curl yojson)
+  (flags :standard -open Base -open Stdio)
+  (modules :standard \ github_fdw_driver internal))
+
+(executable
+ (name github_fdw_driver)
+ (libraries ctypes github_fdw)
+ (modules github_fdw_driver internal)
+ (foreign_stubs
+   (language c)
+   (names github_fdw_driver internal)
+   (flags :standard
+          (:include "%{lib:pgo.api:cflags.sexp}")
+          "-I."
+          ))
+ (flags :standard -linkall)
+ (modes (native shared_object)))
+
+(rule
+  (targets internal.c internal.h internal.ml)
+  (action (run pgo-fdw-gen github_fdw .)))
+
+(rule
+  (targets github_fdw_driver.c github_fdw_driver.ml)
+  (action (run pgo-fdw-build github_fdw)))
+
+(install
+ (package pgo_example)
+ (section lib)
+ (files
+   (github_fdw_driver.so as github_fdw.so)
+   github_fdw.sql
+   ))

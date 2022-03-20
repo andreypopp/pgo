@@ -53,3 +53,17 @@ psql-ps_fdw: build
 	select pg_backend_pid(); \
 	" > $(TMP)/psqlrc
 	@PSQLRC=$(TMP)/psqlrc psql 
+
+psql-github_fdw: build
+	@$(eval TMP := $(shell mktemp -d))
+	@echo " \
+	set client_min_messages to warning; \
+	set dynamic_library_path = '$(EXAMPLE_INSTALLDIR):$libdir'; \
+	begin; \\i $(EXAMPLE_INSTALLDIR)/github_fdw.sql;\ncommit; \
+	load 'github_fdw.so'; \
+	set client_min_messages to notice; \
+	set github.username to 'andreypopp'; \
+	set github.access_token to '$(GH_ACCESS_TOKEN)'; \
+	select pg_backend_pid(); \
+	" > $(TMP)/psqlrc
+	@PSQLRC=$(TMP)/psqlrc psql 
