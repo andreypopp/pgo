@@ -8,6 +8,7 @@ homepage: "https://github.com/andreypopp/pgo"
 bug-reports: "https://github.com/andreypopp/pgo"
 depends: [
   "dune" {>= "2.9"}
+  "dune-action-plugin"
   "dune-configurator"
   "ctypes"
   "odoc" {with-doc}
