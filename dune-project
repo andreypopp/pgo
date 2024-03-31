@@ -7,7 +7,7 @@
 (package
  (name pgo)
  (synopsis "Build PostgreSQL extensions in OCaml")
- (depends dune dune-action-plugin dune-configurator ctypes)
+ (depends dune dune-action-plugin dune-configurator base stdio ctypes)
  (maintainers Andrey Popp <me@andreypopp.com>)
  (authors Andrey Popp <me@andreypopp.com>)
  (homepage https://github.com/andreypopp/pgo)
@@ -18,7 +18,7 @@
 (package
  (name pgo_example)
  (synopsis "Example of pgo")
- (depends dune ctypes pgo)
+ (depends dune ctypes pgo ocurl)
  (maintainers Andrey Popp <me@andreypopp.com>)
  (authors Andrey Popp <me@andreypopp.com>)
  (homepage https://github.com/andreypopp/pgo)

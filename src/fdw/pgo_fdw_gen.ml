@@ -22,23 +22,23 @@ let generate prefix dirname =
 
     let rescan_foreign_scan _ = assert false
   end in
-  let path basename = Caml.Filename.concat dirname basename in
+  let path basename = Stdlib.Filename.concat dirname basename in
   let stubs =
     (module Pgo_fdw_desc.Def (Dummy_fdw) : Cstubs_inverted.BINDINGS)
   in
   Out_channel.with_file (path "internal.ml") ~f:(fun oc ->
       Cstubs_inverted.write_ml
-        (Caml.Format.formatter_of_out_channel oc)
+        (Stdlib.Format.formatter_of_out_channel oc)
         ~prefix stubs);
   Out_channel.with_file (path "internal.c") ~f:(fun oc ->
-      Caml.Format.fprintf
-        (Caml.Format.formatter_of_out_channel oc)
+      Stdlib.Format.fprintf
+        (Stdlib.Format.formatter_of_out_channel oc)
         "%s\n%a" c_prelude
         (Cstubs_inverted.write_c ~prefix)
         stubs);
   Out_channel.with_file (path "internal.h") ~f:(fun oc ->
       Cstubs_inverted.write_c_header
-        (Caml.Format.formatter_of_out_channel oc)
+        (Stdlib.Format.formatter_of_out_channel oc)
         ~prefix stubs)
 
 let () =

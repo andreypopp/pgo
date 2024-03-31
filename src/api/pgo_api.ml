@@ -2,10 +2,10 @@ include Pgo_api_desc.Def (Internal)
 
 let elogf lvl fmt =
   let kerr _ =
-    let message = Caml.Format.flush_str_formatter () in
+    let message = Stdlib.Format.flush_str_formatter () in
     elog lvl message
   in
-  Caml.Format.kfprintf kerr Caml.Format.str_formatter fmt
+  Stdlib.Format.kfprintf kerr Stdlib.Format.str_formatter fmt
 
 let ereport msg =
   ereport msg;
@@ -13,10 +13,10 @@ let ereport msg =
 
 let ereportf fmt =
   let kerr _ =
-    let message = Caml.Format.flush_str_formatter () in
+    let message = Stdlib.Format.flush_str_formatter () in
     ereport message
   in
-  Caml.Format.kfprintf kerr Caml.Format.str_formatter fmt
+  Stdlib.Format.kfprintf kerr Stdlib.Format.str_formatter fmt
 
 let get_config_option name = get_config_option name Ctypes.null true
 

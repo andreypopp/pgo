@@ -10,6 +10,7 @@ depends: [
   "dune" {>= "2.9"}
   "ctypes"
   "pgo"
+  "ocurl"
   "odoc" {with-doc}
 ]
 build: [

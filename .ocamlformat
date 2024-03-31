@@ -59,6 +59,3 @@ break-collection-expressions=fit-or-vertical
 break-cases=all
 break-before-in=fit-or-vertical
 assignment-operator=end-line
-align-variants-decl=false
-align-constructors-decl=false
-align-cases=false

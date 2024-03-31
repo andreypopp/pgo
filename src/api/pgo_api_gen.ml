@@ -7,15 +7,15 @@ let () =
   let mode = argv.(1) in
   let filename = argv.(2) in
   Out_channel.with_file filename ~f:(fun oc ->
-      let fmt = Caml.Format.formatter_of_out_channel oc in
+      let fmt = Stdlib.Format.formatter_of_out_channel oc in
       let fn =
         match mode with
         | "ml" -> Cstubs.write_ml
         | "c" ->
-          Caml.Format.fprintf fmt "%s@\n" c_headers;
+          Stdlib.Format.fprintf fmt "%s@\n" c_headers;
           Cstubs.write_c
         | _ -> assert false
       in
       fn ~concurrency:Cstubs.unlocked fmt ~prefix:"pgo_api"
         (module Pgo_api_desc.Def);
-      Caml.Format.pp_print_flush fmt ())
+      Stdlib.Format.pp_print_flush fmt ())

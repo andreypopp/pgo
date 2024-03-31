@@ -66,7 +66,7 @@ let to_ctypes (module Def : BINDINGS) =
   let module Res = To_ctypes (Def) in
   (module Res.Bindings : Cstubs_inverted.BINDINGS)
 
-let pf = Caml.Format.fprintf
+let pf = Stdlib.Format.fprintf
 
 let write_c ~prefix fmt (module Def : BINDINGS) =
   let funcs = ref [] in
